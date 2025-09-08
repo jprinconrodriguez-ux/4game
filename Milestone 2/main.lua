@@ -20,7 +20,6 @@ local selected = {}
 local selectedJoker = nil
 local lastResult = nil
 local statusMsg = ""
-local moveCount = 0      -- legacy display; GS.moves is the canonical count
 local font
 
 -- persistent sort mode in-session
@@ -120,16 +119,13 @@ local function drawN(n)
     table.insert(hand, d[1])
     drawnCount = drawnCount + 1
   end
-  if drawnCount > 0 and Rules and Rules.sortHandByRank then Rules.sortHandByRank(hand) end
-  
-if drawnCount > 0 then
-  if currentSort == "suit" and Rules and Rules.sortHandBySuit then
-    Rules.sortHandBySuit(hand)
-  elseif Rules and Rules.sortHandByRank then
-    Rules.sortHandByRank(hand)
+  if drawnCount > 0 then
+    if currentSort == "suit" and Rules and Rules.sortHandBySuit then
+      Rules.sortHandBySuit(hand)
+    elseif Rules and Rules.sortHandByRank then
+      Rules.sortHandByRank(hand)
+    end
   end
-end
-
   return drawnCount
 end
 
@@ -145,16 +141,13 @@ local function drawUpTo(target)
     table.insert(hand, d[1])
     total = total + 1
   end
-  if total > 0 and Rules and Rules.sortHandByRank then Rules.sortHandByRank(hand) end
-  
-if total > 0 then
-  if currentSort == "suit" and Rules and Rules.sortHandBySuit then
-    Rules.sortHandBySuit(hand)
-  elseif Rules and Rules.sortHandByRank then
-    Rules.sortHandByRank(hand)
+  if total > 0 then
+    if currentSort == "suit" and Rules and Rules.sortHandBySuit then
+      Rules.sortHandBySuit(hand)
+    elseif Rules and Rules.sortHandByRank then
+      Rules.sortHandByRank(hand)
+    end
   end
-end
-
   return total
 end
 
@@ -343,7 +336,6 @@ local function buildSaveState()
   local gs = {
     phase = GS.phase,
     overlay = (UI and UI.overlay and UI.overlay.kind) or nil,
-    moves = GS.moves,
     turn  = GS.turn,
     playedHands = {},
     limits = { joker_played_this_turn = (GS.limits and GS.limits.joker_played_this_turn) or false },
@@ -394,7 +386,6 @@ local function applyLoadedState(state)
   end
   -- GS
   GS.phase = (state.gs and state.gs.phase) or "MAIN"
-  GS.moves = (state.gs and state.gs.moves) or 0
   GS.turn  = (state.gs and state.gs.turn)  or 1
   GS.playedHands = {}
   if state.gs and state.gs.playedHands then
@@ -486,7 +477,6 @@ local function restartGame()
   hand = {}
   selected = {}
   lastResult = nil
-  moveCount = 0
   GS:reset()
   setStatus("")
   drawUpTo(HAND_START)
@@ -608,9 +598,7 @@ function love.mousepressed(x, y, b)
     return
   end
 
-  -- Buttons
-local UI = { overlay = nil }
- first so clicks don't toggle a card underneath them
+  -- Buttons first so clicks don't toggle a card underneath them
   if pointInRect(x, y, BTN_RESTART) then
     restartGame()
     setStatus("Restarted.")
@@ -620,13 +608,17 @@ local UI = { overlay = nil }
   if GS.phase ~= "WIN" then
     if pointInRect(x, y, BTN_RANK) then
       currentSort = "rank"
-      if Rules and Rules.sortHandByRank then Rules.sortHandByRank(hand) end
+      if Rules and Rules.sortHandByRank then
+        Rules.sortHandByRank(hand)
+      end
       selected = {}
       setStatus("Sorted by rank (A-high left).")
       return
     elseif pointInRect(x, y, BTN_SUIT) then
       currentSort = "suit"
-      if Rules and Rules.sortHandBySuit then Rules.sortHandBySuit(hand) end
+      if Rules and Rules.sortHandBySuit then
+        Rules.sortHandBySuit(hand)
+      end
       selected = {}
       setStatus("Sorted by suit (♠ ♥ ♦ ♣; A-high within).")
       return
@@ -864,7 +856,6 @@ function love.draw()
   love.graphics.print("Deck: "..deckCount.."  Discard: "..discardCount.."  Played: "..playedCount, 40, hud_y)
   hud_y = hud_y + 20
   if S and S.meta then
-    do
     local t = (S.meta and S.meta.threshold) or 1
     local tgt = Scoring and Scoring.target_for and Scoring.target_for(t) or nil
     if tgt then
@@ -872,8 +863,6 @@ function love.draw()
     else
       love.graphics.print("Score: "..tostring(S.meta.score).."   (T"..tostring(t).." — Endless)", 40, hud_y)
     end
-  end
-  hud_y = hud_y + 20
     hud_y = hud_y + 20
   end
   if S and S.combat and S.combat.current_attack then
@@ -886,13 +875,11 @@ function love.draw()
   local lastPlayedY = hud_y + 25
   
   -- Buttons
-local UI = { overlay = nil }
-
   drawButton(BTN_RESTART)
   drawButton(BTN_RANK)
   drawButton(BTN_SUIT)
-     drawButton(BTN_SAVE)
-     drawButton(BTN_LOAD)
+  drawButton(BTN_SAVE)
+  drawButton(BTN_LOAD)
 -- Checklist UI (2.2) + win / end banners
   drawChecklistUI()
 
