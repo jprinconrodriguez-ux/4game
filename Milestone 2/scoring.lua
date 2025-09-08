@@ -70,9 +70,6 @@ function M.apply_penalty(S, hand_name)
   return pts
 end
 
-return M
-
-
 -- Threshold targets (win scores) for core mode
 function M.target_for(t)
   t = math.max(1, math.floor(t or 1))
@@ -93,3 +90,5 @@ function M.reset_for_next_threshold(S)
   if not S or not S.meta then return end
   S.meta.score = 0
 end
+
+return M
