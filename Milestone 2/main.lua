@@ -608,13 +608,17 @@ function love.mousepressed(x, y, b)
   if GS.phase ~= "WIN" then
     if pointInRect(x, y, BTN_RANK) then
       currentSort = "rank"
-      if Rules and Rules.sortHandByRank then Rules.sortHandByRank(hand) end
+      if Rules and Rules.sortHandByRank then
+        Rules.sortHandByRank(hand)
+      end
       selected = {}
       setStatus("Sorted by rank (A-high left).")
       return
     elseif pointInRect(x, y, BTN_SUIT) then
       currentSort = "suit"
-      if Rules and Rules.sortHandBySuit then Rules.sortHandBySuit(hand) end
+      if Rules and Rules.sortHandBySuit then
+        Rules.sortHandBySuit(hand)
+      end
       selected = {}
       setStatus("Sorted by suit (♠ ♥ ♦ ♣; A-high within).")
       return
