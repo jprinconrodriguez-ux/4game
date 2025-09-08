@@ -899,13 +899,14 @@ function love.draw()
     love.graphics.setColor(0,0,0,0.55)
     love.graphics.rectangle("fill", 0, 0, ww, wh)
     local pw, ph = math.min(420, ww-80), 140
-    local px, py = (ww - pw)//2, (wh - ph)//2
+    local px = math.floor((ww - pw)/2)
+    local py = math.floor((wh - ph)/2)
     love.graphics.setColor(0.95,0.98,1)
     love.graphics.rectangle("fill", px, py, pw, ph, 10, 10)
     love.graphics.setColor(0,0,0)
     love.graphics.rectangle("line", px, py, pw, ph, 10, 10)
     love.graphics.printf(msg, px+20, py+20, pw-40, "center")
-    BTN_NEXT_T.x = px + (pw-140)//2
+    BTN_NEXT_T.x = px + math.floor((pw-140)/2)
     BTN_NEXT_T.y = py + ph - 50
     drawButton(BTN_NEXT_T)
     love.graphics.setColor(1,1,1)
